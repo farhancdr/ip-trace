@@ -1,8 +1,11 @@
 import { IpTracker } from "@/components/IpTracker";
 import { getUserIp } from "./actions/ip";
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export default async function Home() {
-  const ip = await getUserIp();
+  const ipInfo = await getUserIp();
 
   return (
     <main className="container mx-auto py-10 px-4">
@@ -11,7 +14,7 @@ export default async function Home() {
         This page tracks changes in your IP address over time. Each time your IP
         changes, a new entry will be added to the table below.
       </p>
-      <IpTracker currentIp={ip} />
+      <IpTracker ipInfo={ipInfo} />
     </main>
   );
 }
