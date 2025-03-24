@@ -3,8 +3,8 @@ import { headers } from "next/headers";
 export async function getUserIp() {
   try {
     const hdrs = await headers();
-    let forwardedFor = hdrs.get("x-forwarded-for");
-    let realIp = hdrs.get("x-real-ip");
+    const forwardedFor = hdrs.get("x-forwarded-for");
+    const realIp = hdrs.get("x-real-ip");
 
     if (forwardedFor) {
       return forwardedFor.split(",")[0].trim();
