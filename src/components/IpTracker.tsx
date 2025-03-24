@@ -21,12 +21,26 @@ export function IpTracker({ ipInfo }: { ipInfo: IpInfo }) {
   useEffect(() => {
     const storedHistory = localStorage.getItem("ipHistory")
     if (storedHistory) {
-      const parsedHistory: IpEntry[] = JSON.parse(storedHistory)
-      setIpHistory(parsedHistory)
+      try {
+        const parsedHistory: IpEntry[] = JSON.parse(storedHistory)
+        
+        // Migrate old entries that don't have source
+        const migratedHistory = parsedHistory.map(entry => {
+          if (!entry.source) {
+            return { ...entry, source: "unknown" };
+          }
+          return entry;
+        });
+        
+        setIpHistory(migratedHistory)
 
-      // Ensure the IP check happens only after history is loaded
-      if (parsedHistory.length === 0 || parsedHistory[0].ip !== ipInfo.ip) {
-        addNewIpEntry(ipInfo.ip, ipInfo.source, parsedHistory)
+        // Ensure the IP check happens only after history is loaded
+        if (migratedHistory.length === 0 || migratedHistory[0].ip !== ipInfo.ip) {
+          addNewIpEntry(ipInfo.ip, ipInfo.source, migratedHistory)
+        }
+      } catch (error) {
+        console.error("Error parsing IP history:", error)
+        addNewIpEntry(ipInfo.ip, ipInfo.source, [])
       }
     } else {
       // If no history exists, create a new entry
@@ -45,10 +59,12 @@ export function IpTracker({ ipInfo }: { ipInfo: IpInfo }) {
     const newEntry: IpEntry = { 
       ip, 
       date: new Date().toLocaleString(),
-      source 
+      source: source || "unknown" // Ensure source is never undefined
     }
     setIpHistory([newEntry, ...history])
   }
+
+  // Remove the problematic useEffect that was causing an infinite loop
 
   const handleRefresh = async () => {
     setIsRefreshing(true)
