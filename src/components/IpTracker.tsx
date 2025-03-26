@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { RefreshCw, Trash2, Globe, Clock, Info } from "lucide-react"
+import { RefreshCw, Trash2, Globe, Clock, Info, X } from "lucide-react"
 import { IpInfo } from "@/app/actions/ip"
 import { Badge } from "@/components/ui/badge"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
@@ -106,6 +106,15 @@ export function IpTracker({ ipInfo }: { ipInfo: IpInfo }) {
     }
   }
 
+  // Add this new function to delete individual entries
+  const deleteEntry = (indexToDelete: number) => {
+    // Don't allow deleting the current IP (index 0)
+    if (indexToDelete === 0) return;
+    
+    const updatedHistory = ipHistory.filter((_, index) => index !== indexToDelete);
+    setIpHistory(updatedHistory);
+  }
+
   return (
     <Card className="w-full shadow-md border-t-4 border-t-blue-500 dark:border-t-blue-400">
       <CardHeader className="flex flex-row items-center justify-between bg-gradient-to-r from-blue-50 to-white dark:from-gray-800 dark:to-gray-900 rounded-t-lg">
@@ -191,6 +200,7 @@ export function IpTracker({ ipInfo }: { ipInfo: IpInfo }) {
                     Source
                   </div>
                 </TableHead>
+                <TableHead className="w-[60px]"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -210,11 +220,33 @@ export function IpTracker({ ipInfo }: { ipInfo: IpInfo }) {
                         {entry.source || "unknown"}
                       </Badge>
                     </TableCell>
+                    <TableCell className="text-right">
+                      {index !== 0 && (
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button 
+                                variant="ghost" 
+                                size="icon" 
+                                onClick={() => deleteEntry(index)}
+                                className="h-8 w-8 text-gray-500 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20"
+                              >
+                                <X className="h-4 w-4" />
+                                <span className="sr-only">Delete entry</span>
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Delete this entry</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      )}
+                    </TableCell>
                   </TableRow>
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={3} className="text-center py-10 text-muted-foreground">
+                  <TableCell colSpan={4} className="text-center py-10 text-muted-foreground">
                     <div className="flex flex-col items-center">
                       <Globe className="h-10 w-10 text-gray-300 dark:text-gray-600 mb-2" />
                       <p>No IP history found. Refresh the page when your IP changes.</p>
