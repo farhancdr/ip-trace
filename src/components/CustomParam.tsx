@@ -1,10 +1,15 @@
 "use client"
 
-import { onCallServer } from "@/app/actions/game-start";
+import { onCallServer } from "@/actions/game-start";
+import { useEffect, useState } from "react";
 
 export const CustomParam = () => {
-  const urlParams = new URLSearchParams(window.location.search);
-  const value = urlParams.get("custom");
+  const [value, setValue] = useState<string | null>(null);
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    setValue(urlParams.get("custom"));
+  }, []);
 
   function handleClick() {
     onCallServer({

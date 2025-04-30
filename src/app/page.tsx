@@ -1,5 +1,5 @@
 import { IpTracker } from "@/components/IpTracker";
-import { getUserIp } from "./actions/ip";
+import { getUserIp } from "../actions/ip";
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;

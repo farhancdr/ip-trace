@@ -1,8 +1,5 @@
 import { CustomParam } from "@/components/CustomParam";
 
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
-
 export default async function T3Admin() {
 
   return (
